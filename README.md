@@ -28,6 +28,7 @@ import HammerjsImage  from 'hammerjs-image'
 
 var hi = new HammerjsImage({
     id: '#photo_area',
+    //  el: document.getElementById('#photo_area'),
     img: '12.jpg',
     maxScale: 2,
     minScale: 0.5
@@ -69,5 +70,8 @@ var hi = new HammerjsImage({
 
 ### 生成旋转，缩放，拖放后的base64
 ```js
+  方法一~
   hi.translate3d().toDataURL()
+  方法二~
+  hi.getBase64()
 ```

@@ -79,6 +79,10 @@ window.HammerjsImage = function HammerjsImage(opt) {
         return that
     }
 
+    this.getBase64 = function() {
+        return that.translate3d().toDataURL()
+    }
+
     this.preview = function() {
         if (scale > that.maxScale) {
             scale = that.maxScale
