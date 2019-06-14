@@ -1,0 +1,62 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title></title>
+<script type="text/javascript" src="hammer.min.js"></script>
+<meta name="viewport" content="user-scalable=no , width=device-width , initial-scale=1 , maximum-scale=1">
+<style>
+    #photo_area {
+      top: 50px;
+      left: 50px;
+      display: inline-block;
+      position: absolute;
+    }
+</style>
+</head>
+
+<body>
+    缩放：<input type="range" onmousemove="m_changeScale(this)" onchange="m_changeScale(this)" name="points" min="0.5" max="2" step="0.1" value="1">
+    旋转：<input type="range" onmousemove="m_changeRotation(this)" onchange="m_changeRotation(this)" name="points" min="0" max="360" step="1" value="0">
+    <div id="photo_area" style="width: 260px; height: 360px; background-color: black; overflow: hidden;">
+    </div>
+    <button onclick="m_click()">裁剪</button>
+    <button onclick="m_clickB64()">B64</button>
+    <div id="show" style="height: 80%; position: absolute; display: inline-block; background-color: black; overflow: scroll;">
+    </div>
+    <script src="bundle.js"></script>
+    <script type="text/javascript">
+
+    var hi = new HammerjsImage({
+        //id: '#photo_area',
+        el: document.getElementById('photo_area'),
+        img: '12.jpg',
+        maxScale: 2,
+        minScale: 0.5
+    })
+
+    hi.onPreviewChange = function(hi, translate3d) {
+        m_click()
+    }
+
+    function m_click() {
+        var show = document.getElementById('show')
+        show.innerHTML = ''
+        show.appendChild(hi.translate3d())
+    }
+
+    function m_clickB64() {
+        console.log(hi.translate3d().toDataURL())
+    }
+
+    function m_changeScale(el) {
+        hi.setTranslate3dInfo({ scale: el.value }).preview()
+    }
+
+    function m_changeRotation(el) {
+        hi.setTranslate3dInfo({ rotation: el.value }).preview()
+    }
+    </script>
+</body>
+
+</html>

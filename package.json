@@ -1,0 +1,33 @@
+{
+  "name": "hammerjs-image",
+  "version": "1.0.1",
+  "description": "hammerjs-image",
+  "main": "./dist/hammerjs-image.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack ./app/main.js --output dist/hammerjs-image.js",
+    "dev": "webpack-dev-server --host 0.0.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rzl/hammerjs-image.git"
+  },
+  "keywords": [
+    "hammerjs",
+    "image"
+  ],
+  "author": "rzl",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rzl/hammerjs-image/issues"
+  },
+  "homepage": "https://github.com/rzl/hammerjs-image#readme",
+  "dependencies": {
+    "hammerjs": "^2.0.8"
+  },
+  "devDependencies": {
+    "webpack": "^4.31.0",
+    "webpack-cli": "^3.3.2",
+    "webpack-dev-server": "^3.3.1"
+  }
+}
