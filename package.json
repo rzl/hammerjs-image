@@ -1,6 +1,6 @@
 {
   "name": "hammerjs-image",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "description": "hammerjs-image",
   "main": "./dist/hammerjs-image.js",
   "scripts": {

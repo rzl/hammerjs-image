@@ -2,6 +2,10 @@ var Hammer = require('hammerjs')
 if (!Hammer) { Hammer = window.Hammer }
 window.HammerjsImage = function HammerjsImage(opt) {
     var that = this
+    //处理的图片元素
+    var img
+    //返回的canvas元素
+    var c
     var offset_x = 0
     var offset_y = 0
     var scale = 1
@@ -16,7 +20,7 @@ window.HammerjsImage = function HammerjsImage(opt) {
         height: 870
     }
     this.zoom = 1
-    this.maxScale = isNaN(opt.maxScale) ? 2 : opt.maxScale
+    this.maxScale = isNaN(opt.maxScale) ? 3 : opt.maxScale
     this.minScale = isNaN(opt.minScale) ? 0.5 : opt.minScale
     if (!(opt.id || opt.el)) {
         return console.error('没有需要旋转的元素')
@@ -34,26 +38,43 @@ window.HammerjsImage = function HammerjsImage(opt) {
         }
         that.preview()
     }
+    /**
+     * [changeImg 加载图片预处理居中显示]
+     * @param  {[type]} src [description]
+     * @return {[type]}     [description]
+     */
+    this.changeImg = function(src) {
+        if (img) { img.remove() }
+        img = document.createElement('img')
+        img.style.maxHeight = '100%'
+        img.style.maxWidth = '100%'
+        img.align = 'left'
+        img.ondragstart = function() {
+            return false;
+        }
 
-    var hammertime = new Hammer.Manager(square)
+        img.onload = function() {
+            that.zoom = this.naturalWidth / this.width
+            canvas_info.width = that.zoom * square.offsetWidth
+            canvas_info.height = that.zoom * square.offsetHeight
 
-    var img = document.createElement('img')
-    img.style.maxHeight = '100%'
-    img.style.maxWidth = '100%'
-    img.align = 'left'
-    img.ondragstart = function() {
-        return false;
+            var ox = (square.offsetWidth / 2) - (this.width / 2)
+            var oy = (square.offsetHeight / 2) - (this.height / 2)
+
+            that.setTranslate3dInfo({
+                offset_x: ox,
+                offset_y: oy,
+                scale: 1,
+                rotation: 0
+            }).preview()
+        }
+        img.src = src
+        square.appendChild(img)
     }
-
-    img.onload = function() {
-        that.zoom = this.naturalWidth / this.width
-        canvas_info.width = that.zoom * square.offsetWidth
-        canvas_info.height = that.zoom * square.offsetHeight
-    }
-
-    img.src = opt.img
-    square.appendChild(img)
-
+    /**
+     * [getTranslate3dInfo 获取当前旋转缩放移动参数]
+     * @return {[type]} [description]
+     */
     this.getTranslate3dInfo = function() {
         return {
             offset_x,
@@ -62,27 +83,41 @@ window.HammerjsImage = function HammerjsImage(opt) {
             rotation
         }
     }
-
+    /**
+     * [setTranslate3dInfo 手动设置旋转缩放移动，该设置不会影响预览，需要调用perview进行预览]
+     * @param {[type]} opt [description]
+     */
     this.setTranslate3dInfo = function(opt) {
         if (opt.offset_x !== undefined) {
             offset_x = opt.offset_x
+            last_offset_x = opt.offset_x
         }
         if (opt.offset_y !== undefined) {
             offset_y = opt.offset_y
+            last_offset_y = opt.offset_y
         }
         if (opt.scale !== undefined) {
             scale = opt.scale
+            last_scale = opt.scale
         }
         if (opt.rotation !== undefined) {
             rotation = opt.rotation
+            last_rotation = opt.rotation
         }
         return that
     }
-
+    /**
+     * [getBase64 返回图片旋转缩放移动后的base64数据]
+     * @return {[type]} [description]
+     */
     this.getBase64 = function() {
         return that.translate3d().toDataURL()
     }
 
+    /**
+     * [preview 预览选择缩放移动后的图片，不进行canvas生成]
+     * @return {[type]} [description]
+     */
     this.preview = function() {
         if (scale > that.maxScale) {
             scale = that.maxScale
@@ -102,9 +137,13 @@ window.HammerjsImage = function HammerjsImage(opt) {
     this.onPreviewChange = function() {
 
     }
-
+    /**
+     * 获取图片旋转缩放移动后的canvas
+     * @return {[type]} [description]
+     */
     this.translate3d = function() {
-        var c = document.createElement('canvas')
+        if (c) { c.remove() }
+        c = document.createElement('canvas')
         c.height = canvas_info.height;
         c.width = canvas_info.width;
         var ctx = c.getContext("2d");
@@ -118,7 +157,15 @@ window.HammerjsImage = function HammerjsImage(opt) {
         ctx.drawImage(img, 0, 0)
         return c
     }
+    /**
+     * 初始化加载图片
+     */
+    this.changeImg(opt.img)
 
+    /**
+     * 初始化hammer绑定hammer,操作区域，图片之间的关系
+     */
+    var hammertime = new Hammer.Manager(square)
     var Pan = new Hammer.Pan();
     var Rotate = new Hammer.Rotate();
     var Pinch = new Hammer.Pinch();

@@ -75,3 +75,11 @@ var hi = new HammerjsImage({
   方法二~
   hi.getBase64()
 ```
+
+### 切换图片
+```js
+  方法一~
+  hi.changeImg('12.jpg')
+  方法二~
+  hi.changeImg('base64')
+```
